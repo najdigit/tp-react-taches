@@ -1,11 +1,13 @@
-import { useState } from 'react' // <-- IMPORTANT : on importe useState
+import { useState } from 'react'
 import Entete from './components/Entete.jsx'
 import ListeTaches from './components/ListeTaches.jsx'
 import Pied from './components/Pied.jsx'
 import Carte from './components/Carte.jsx'
 import Compteur from './components/Compteur.jsx'
+import FormulaireAjout from './components/FormulaireAjout.jsx'
+import Filtres from './components/Filtres.jsx'
+import Statistiques from './components/Statistiques.jsx'
 
-// On renomme TACHES en TACHES_INITIALES
 const TACHES_INITIALES = [
   { id: 1, titre: 'Installer Node.js et Vite', terminee: true },
   { id: 2, titre: 'Comprendre les composants', terminee: true },
@@ -14,10 +16,10 @@ const TACHES_INITIALES = [
 ]
 
 function App() {
-  // On place la liste dans un état
   const [taches, setTaches] = useState(TACHES_INITIALES)
+  const [filtre, setFiltre] = useState('toutes') // Nouvel état pour le filtre
 
-  // Fonction pour cocher/décocher une tâche
+  // --- Actions sur les tâches ---
   function basculerTache(id) {
     setTaches(
       taches.map((tache) =>
@@ -26,10 +28,21 @@ function App() {
     )
   }
 
-  // Fonction pour supprimer une tâche
   function supprimerTache(id) {
     setTaches(taches.filter((tache) => tache.id !== id))
   }
+
+  function ajouterTache(titre) {
+    const nouvelleTache = { id: Date.now(), titre: titre, terminee: false }
+    setTaches([...taches, nouvelleTache])
+  }
+
+  // --- Calcul des tâches visibles selon le filtre ---
+  const tachesVisibles = taches.filter((tache) => {
+    if (filtre === 'actives') return !tache.terminee
+    if (filtre === 'terminees') return tache.terminee
+    return true // 'toutes'
+  })
 
   return (
     <div className="app">
@@ -39,13 +52,21 @@ function App() {
         <Compteur />
       </Carte>
 
+      <Carte titre="Nouvelle tâche">
+        <FormulaireAjout onAjouter={ajouterTache} />
+      </Carte>
+
       <Carte titre="Ma liste">
-        {/* On passe les fonctions onBasculer et onSupprimer à ListeTaches */}
+        <Filtres filtre={filtre} onChanger={setFiltre} />
         <ListeTaches
-          taches={taches}
+          taches={tachesVisibles}
           onBasculer={basculerTache}
           onSupprimer={supprimerTache}
         />
+      </Carte>
+
+      <Carte titre="Statistiques">
+        <Statistiques taches={taches} />
       </Carte>
 
       <Pied auteur="NAJDI MED NOURREDINE" />
