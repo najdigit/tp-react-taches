@@ -1,6 +1,7 @@
 import Tache from './Tache.jsx'
 
-function ListeTaches({ taches }) {
+// On récupère les nouvelles props
+function ListeTaches({ taches, onBasculer, onSupprimer }) {
     if (taches.length === 0) {
         return <p className="vide">Aucune tâche à afficher.</p>
     }
@@ -8,7 +9,14 @@ function ListeTaches({ taches }) {
     return (
         <ul className="liste-taches">
             {taches.map((tache) => (
-                <Tache key={tache.id} titre={tache.titre} terminee={tache.terminee} />
+                <Tache
+                    key={tache.id}
+                    id={tache.id}
+                    titre={tache.titre}
+                    terminee={tache.terminee}
+                    onBasculer={onBasculer}
+                    onSupprimer={onSupprimer}
+                />
             ))}
         </ul>
     )
